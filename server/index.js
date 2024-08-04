@@ -18,7 +18,7 @@ mongoose
         console.error(err);
     });
 
-// Middleware
+// Start server
 app.listen(3000, () => {
     console.log('\n--> Server is running on port 3000!');
 });
@@ -26,3 +26,10 @@ app.listen(3000, () => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+
+// Middleware for handling errors
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    res.status(statusCode).json({ success: false, statusCode, message });
+});
