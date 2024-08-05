@@ -7,7 +7,7 @@ import {
     Dashboard_Page,
     Projects_Page,
 } from './pages/exportPage';
-import { Header_Component } from './components/exportComponent';
+import { Footer_Component, Header_Component } from './components/exportComponent';
 
 export default function App() {
     return (
@@ -21,6 +21,7 @@ export default function App() {
                 <Route path='/dashboard' element={<Dashboard_Page />} />
                 <Route path='/projects' element={<Projects_Page />} />
             </Routes>
+            <Footer_Component />
         </Router>
     );
 }
