@@ -15,6 +15,9 @@ export const signUp = async (req, res, next) => {
         const savedUser = await newUser.save();
         return res.status(201).json(savedUser);
     } catch (error) {
+        if (error.code === 11000) {
+            return next(handleError(400, 'Already have user in system'));
+        }
         next(error);
     }
 };
