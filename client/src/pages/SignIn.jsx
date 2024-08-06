@@ -2,12 +2,15 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { signInSuccess } from '../redux/slices/userSlice';
 
 export default function SignIn() {
     // state for error message and loading
     const [errorMessage, setErrorMessage] = useState(null);
     const [loadingState, setLoadingState] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     // handle value of form input fields
     const [formData, setFormData] = useState({});
@@ -22,17 +25,17 @@ export default function SignIn() {
             return setErrorMessage('Please fill all fields');
         }
         try {
-            setErrorMessage(null);
             setLoadingState(true);
+            setErrorMessage(null);
             const res = await axios.post('/api/auth/sign-in', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
             const data = res.data;
-            console.log(res);
-            // navigate to home page if user signed in successfully
+            // dispatch info user & navigate to home page if user signed in successfully
             if (res.status === 200) {
+                dispatch(signInSuccess(data));
                 navigate('/');
             }
         } catch (error) {
