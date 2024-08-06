@@ -126,4 +126,3 @@ export default function Footer_Component() {
         </Footer>
     );
 }
-// w-full sm:flex sm:items-center sm:justify-between
