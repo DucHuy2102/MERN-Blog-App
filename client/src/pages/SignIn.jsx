@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/slices/userSlice';
+import OAuth_Component from '../components/OAuth_Component';
 
 export default function SignIn() {
     // state for error message and loading
@@ -97,6 +98,9 @@ export default function SignIn() {
                                 'Sign In'
                             )}
                         </Button>
+
+                        {/* sign up with Google */}
+                        <OAuth_Component />
                     </form>
 
                     {/* sign up */}

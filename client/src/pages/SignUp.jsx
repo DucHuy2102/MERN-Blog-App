@@ -2,6 +2,7 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import OAuth_Component from '../components/OAuth_Component';
 
 export default function SignUp() {
     // state for error message and loading
@@ -102,6 +103,9 @@ export default function SignUp() {
                                 'Sign Up'
                             )}
                         </Button>
+
+                        {/* sign up with Google */}
+                        <OAuth_Component />
                     </form>
 
                     {/* sign in */}
