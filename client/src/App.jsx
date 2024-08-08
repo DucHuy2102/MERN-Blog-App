@@ -7,7 +7,7 @@ import {
     Dashboard_Page,
     Projects_Page,
 } from './pages/exportPage';
-import { Footer_Component, Header_Component } from './components/exportComponent';
+import { Footer_Component, Header_Component, PrivateRoute } from './components/exportComponent';
 
 export default function App() {
     return (
@@ -18,7 +18,9 @@ export default function App() {
                 <Route path='/about' element={<About_Page />} />
                 <Route path='/sign-in' element={<SignIn_Page />} />
                 <Route path='/sign-up' element={<SignUp_Page />} />
-                <Route path='/dashboard' element={<Dashboard_Page />} />
+                <Route element={<PrivateRoute />}>
+                    <Route path='/dashboard' element={<Dashboard_Page />} />
+                </Route>
                 <Route path='/projects' element={<Projects_Page />} />
             </Routes>
             <Footer_Component />
