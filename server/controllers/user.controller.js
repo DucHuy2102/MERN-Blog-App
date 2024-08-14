@@ -16,15 +16,17 @@ export const updateUSer = async (req, res, next) => {
         if (req.body.username.length < 7 || req.body.username.length > 20) {
             return next(handleError(400, 'Username must be between 7 and 20 characters long'));
         }
-    }
-    if (req.body.username.includes(' ')) {
-        return next(handleError(400, 'Username cannot contain spaces'));
-    }
-    if (req.body.username !== req.body.username.toLowerCase()) {
-        return next(handleError(400, 'Username must be lowercase'));
-    }
-    if (!req.body.username.match(/^[a-z0-9]+$/)) {
-        return next(handleError(400, 'Username can only contain lowercase letters and numbers'));
+        if (req.body.username.includes(' ')) {
+            return next(handleError(400, 'Username cannot contain spaces'));
+        }
+        if (req.body.username !== req.body.username.toLowerCase()) {
+            return next(handleError(400, 'Username must be lowercase'));
+        }
+        if (!req.body.username.match(/^[a-z0-9]+$/)) {
+            return next(
+                handleError(400, 'Username can only contain lowercase letters and numbers')
+            );
+        }
     }
 
     try {

@@ -11,7 +11,6 @@ export default function Dashboard() {
         const tabURL = urlParams.get('tab');
         setTab(tabURL);
     }, [location.search]);
-    console.log(tab);
 
     return (
         <div className='min-h-screen flex flex-col md:flex-row'>

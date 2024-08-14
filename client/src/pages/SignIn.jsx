@@ -28,11 +28,7 @@ export default function SignIn() {
         try {
             setLoadingState(true);
             setErrorMessage(null);
-            const res = await axios.post('/api/auth/sign-in', formData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const res = await axios.post('/api/auth/sign-in', formData);
             const data = res.data;
             // dispatch info user & navigate to home page if user signed in successfully
             if (res.status === 200) {
