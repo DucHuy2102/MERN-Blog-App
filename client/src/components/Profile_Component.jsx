@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from 'flowbite-react';
+import { Alert, Button, Modal, TextInput } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
@@ -6,7 +6,8 @@ import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import axios from 'axios';
-import { updateSuccess } from '../redux/slices/userSlice';
+import { deleteSuccess, updateSuccess } from '../redux/slices/userSlice';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 export default function Profile_Component() {
     const currentUser = useSelector((state) => state.user.currentUser);
@@ -19,6 +20,7 @@ export default function Profile_Component() {
     const fileRef = useRef();
     const [isUpdateSuccess, setIsUpdateSuccess] = useState(null);
     const [uploadFailed, setUploadError] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
@@ -84,6 +86,23 @@ export default function Profile_Component() {
                 const updatedUser = res.data;
                 setIsUpdateSuccess('Update user successfully');
                 dispatch(updateSuccess(updatedUser));
+            }
+        } catch (error) {
+            const errorMessages = error.response?.data?.message;
+            if (errorMessages) {
+                setUploadError(errorMessages || 'An unexpected error occurred');
+            }
+            console.log(error);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setShowModal(false);
+        try {
+            const res = await axios.delete(`/api/user/delete/${currentUser._id}`);
+            if (res?.status === 200) {
+                dispatch(deleteSuccess());
+                localStorage.removeItem('user');
             }
         } catch (error) {
             const errorMessages = error.response?.data?.message;
@@ -185,13 +204,37 @@ export default function Profile_Component() {
             </form>
 
             <div className='text-red-500 flex justify-between mt-4'>
-                <span className='border px-5 py-2 rounded-xl hover:bg-red-500 hover:text-white hover:border-none transition duration-200 cursor-pointer'>
+                <span
+                    onClick={() => setShowModal(true)}
+                    className='border px-5 py-2 rounded-xl hover:bg-red-500 hover:text-white hover:border-none transition duration-200 cursor-pointer'
+                >
                     Delete Account
                 </span>
                 <span className='border px-5 py-2 rounded-xl hover:bg-red-500 hover:text-white hover:border-none transition duration-200 cursor-pointer'>
                     Sign Out
                 </span>
             </div>
+
+            {/* delete account modal */}
+            <Modal show={showModal} onClose={() => setShowModal(false)} size='md' popup>
+                <Modal.Header />
+                <Modal.Body>
+                    <div className='text-center'>
+                        <HiOutlineExclamationCircle className='text-red-500 text-5xl mx-auto' />
+                        <span className='text-lg font-medium text-black'>
+                            This action cannot be undone. Do you want to proceed with deleting?
+                        </span>
+                        <div className='flex justify-between items-center mt-5'>
+                            <Button color='gray' onClick={() => setShowModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button color='failure' onClick={handleDeleteAccount}>
+                                Delete
+                            </Button>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }
