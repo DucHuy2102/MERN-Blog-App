@@ -2,6 +2,7 @@ import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import { handleError } from '../utils/handleError.js';
 
+// Update user
 export const updateUSer = async (req, res, next) => {
     if (req.user.id !== req.params.userID) {
         return next(handleError(403, 'You are not authorized to perform this action'));
@@ -44,6 +45,20 @@ export const updateUSer = async (req, res, next) => {
         );
         const { password, ...rest } = updatedUser._doc;
         res.status(200).json(rest);
+    } catch (error) {
+        next(handleError(500, 'Internal server error'));
+    }
+};
+
+// Delete user
+export const deleteUser = async (req, res, next) => {
+    if (req.user.id !== req.params.userID) {
+        return next(handleError(403, 'You are not authorized to perform this action'));
+    }
+
+    try {
+        await User.findByIdAndDelete(req.params.userID);
+        res.status(200).json('User has been deleted');
     } catch (error) {
         next(handleError(500, 'Internal server error'));
     }
