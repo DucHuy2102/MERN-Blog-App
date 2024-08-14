@@ -1,19 +1,24 @@
 import { Alert, Button, TextInput } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import axios from 'axios';
+import { updateSuccess } from '../redux/slices/userSlice';
 
 export default function Profile_Component() {
     const currentUser = useSelector((state) => state.user.currentUser);
+
+    const dispatch = useDispatch();
     const [imgFile, setImgFile] = useState(null);
     const [imgURL, setImgURL] = useState(null);
     const [imgUploadProgress, setImgUploadProgress] = useState(null);
-    const [imgUploadError, setImgUploadError] = useState(null);
-    console.log(imgUploadError, imgUploadProgress);
+    const [formData, setFormData] = useState({});
     const fileRef = useRef();
+    const [isUpdateSuccess, setIsUpdateSuccess] = useState(null);
+    const [uploadFailed, setUploadError] = useState(null);
 
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
@@ -26,7 +31,7 @@ export default function Profile_Component() {
     useEffect(() => {
         if (imgFile) {
             const uploadImage = async () => {
-                setImgUploadError(null);
+                setUploadError(null);
                 const storage = getStorage(app);
                 const fileName = new Date().getTime() + imgFile.name;
                 const storageRef = ref(storage, fileName);
@@ -38,8 +43,8 @@ export default function Profile_Component() {
                         setImgUploadProgress(progress.toFixed(0));
                         console.log('Upload is ' + progress + '% done');
                     },
-                    (error) => {
-                        setImgUploadError('Could not upload image (File must be less than 2MB)');
+                    () => {
+                        setUploadError('Could not upload image (File must be less than 2MB)');
                         setImgUploadProgress(null);
                         setImgFile(null);
                         setImgURL(null);
@@ -47,6 +52,7 @@ export default function Profile_Component() {
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             setImgURL(downloadURL);
+                            setFormData({ ...formData, avatar: downloadURL });
                         });
                     }
                 );
@@ -56,10 +62,42 @@ export default function Profile_Component() {
         }
     }, [imgFile]);
 
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSubmitForm = async (e) => {
+        e.preventDefault();
+        setIsUpdateSuccess(null);
+        setUploadError(null);
+        if (Object.keys(formData).length === 0) {
+            setUploadError('Nothing changed to update !!!');
+            return;
+        }
+        if (imgUploadProgress < 100) {
+            setUploadError('Please wait for image to upload !!!');
+            return;
+        }
+        try {
+            const res = await axios.put(`/api/user/update/${currentUser._id}`, formData);
+            if (res?.status === 200) {
+                const updatedUser = res.data;
+                setIsUpdateSuccess('Update user successfully');
+                dispatch(updateSuccess(updatedUser));
+            }
+        } catch (error) {
+            const errorMessages = error.response?.data?.message;
+            if (errorMessages) {
+                setUploadError(errorMessages || 'An unexpected error occurred');
+            }
+            console.log(error);
+        }
+    };
+
     return (
         <div className='max-w-lg mx-auto p-3 w-full'>
             <h1 className='text-center font-semibold text-3xl my-7'>Profile</h1>
-            <form className='flex flex-col gap-4'>
+            <form className='flex flex-col gap-4' onSubmit={handleSubmitForm}>
                 {/* avatar */}
                 <input
                     type='file'
@@ -101,12 +139,22 @@ export default function Profile_Component() {
                 </div>
 
                 {/* show error when upload failed */}
-                {imgUploadError && (
+                {uploadFailed && (
                     <Alert
                         color='failure'
                         className='w-full font-semibold flex justify-center items-center'
                     >
-                        {imgUploadError}
+                        {uploadFailed}
+                    </Alert>
+                )}
+
+                {/* show message when update successfully */}
+                {isUpdateSuccess && (
+                    <Alert
+                        color='success'
+                        className='w-full font-semibold flex justify-center items-center'
+                    >
+                        {isUpdateSuccess}
                     </Alert>
                 )}
 
@@ -116,14 +164,21 @@ export default function Profile_Component() {
                     id='username'
                     placeholder='Username'
                     defaultValue={currentUser.username}
+                    onChange={handleChange}
                 />
                 <TextInput
                     type='text'
                     id='email'
                     placeholder='Email'
                     defaultValue={currentUser.email}
+                    onChange={handleChange}
                 />
-                <TextInput type='text' id='password' placeholder='Password' />
+                <TextInput
+                    type='text'
+                    id='password'
+                    placeholder='Password'
+                    onChange={handleChange}
+                />
                 <Button type='submit' gradientDuoTone='purpleToBlue' outline>
                     Update
                 </Button>
