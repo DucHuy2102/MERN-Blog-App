@@ -6,22 +6,34 @@ import {
     SignUp_Page,
     Dashboard_Page,
     Projects_Page,
+    CreatePost_Page,
 } from './pages/exportPage';
-import { Footer_Component, Header_Component, PrivateRoute } from './components/exportComponent';
+import {
+    AdminRoute,
+    Footer_Component,
+    Header_Component,
+    PrivateRoute,
+} from './components/exportComponent';
 
 export default function App() {
     return (
         <Router>
             <Header_Component />
             <Routes>
+                {/* route for user */}
                 <Route path='/' element={<Home_Page />} />
-                <Route path='/about' element={<About_Page />} />
                 <Route path='/sign-in' element={<SignIn_Page />} />
                 <Route path='/sign-up' element={<SignUp_Page />} />
+                <Route path='/about' element={<About_Page />} />
+                <Route path='/projects' element={<Projects_Page />} />
                 <Route element={<PrivateRoute />}>
                     <Route path='/dashboard' element={<Dashboard_Page />} />
                 </Route>
-                <Route path='/projects' element={<Projects_Page />} />
+
+                {/* route for admin */}
+                <Route element={<AdminRoute />}>
+                    <Route path='/create-post' element={<CreatePost_Page />} />
+                </Route>
             </Routes>
             <Footer_Component />
         </Router>

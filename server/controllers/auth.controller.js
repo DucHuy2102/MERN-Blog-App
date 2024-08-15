@@ -43,6 +43,7 @@ export const signIn = async (req, res, next) => {
         const token = jwt.sign(
             {
                 id: validUser._id,
+                isAdmin: validUser.isAdmin,
             },
             process.env.JWT_SECRET
         );
@@ -64,7 +65,10 @@ export const googleSignIn = async (req, res, next) => {
     try {
         const isExistUser = await User.findOne({ email });
         if (isExistUser) {
-            const token = jwt.sign({ id: isExistUser._id }, process.env.JWT_SECRET);
+            const token = jwt.sign(
+                { id: isExistUser._id, isAdmin: isExistUser.isAdmin },
+                process.env.JWT_SECRET
+            );
             const { password, ...rest } = isExistUser._doc;
             res.status(200)
                 .cookie('access_token', token, {
@@ -83,7 +87,10 @@ export const googleSignIn = async (req, res, next) => {
                 avatar: photoURL,
             });
             const savedUser = await newUser.save();
-            const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
+            const token = jwt.sign(
+                { id: savedUser._id, isAdmin: savedUser.isAdmin },
+                process.env.JWT_SECRET
+            );
             const { password, ...rest } = savedUser._doc;
             res.status(200)
                 .cookie('access_token', token, {

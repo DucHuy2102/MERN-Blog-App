@@ -4,3 +4,4 @@ export { default as SignUp_Page } from './SignUp';
 export { default as Dashboard_Page } from './Dashboard';
 export { default as Home_Page } from './Home';
 export { default as Projects_Page } from './Projects';
+export { default as CreatePost_Page } from './CreatePost';

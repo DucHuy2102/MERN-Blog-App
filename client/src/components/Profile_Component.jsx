@@ -8,6 +8,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import axios from 'axios';
 import { user_DeleteAccount, user_SignOut, user_UpdateProfile } from '../redux/slices/userSlice';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 export default function Profile_Component() {
     // get current user from redux store
@@ -20,7 +21,7 @@ export default function Profile_Component() {
     const [imgUploadProgress, setImgUploadProgress] = useState(null);
     const [formData, setFormData] = useState({});
     const fileRef = useRef();
-    const [isuser_UpdateProfile, setIsuser_UpdateProfile] = useState(null);
+    const [isUpdateSuccess, setIsUpdateSuccess] = useState(null);
     const [uploadFailed, setUploadError] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
@@ -51,6 +52,7 @@ export default function Profile_Component() {
                     },
                     () => {
                         setUploadError('Could not upload image (File must be less than 2MB)');
+                        setTimeout(() => setUploadError(null), 5000);
                         setImgUploadProgress(null);
                         setImgFile(null);
                         setImgURL(null);
@@ -76,27 +78,39 @@ export default function Profile_Component() {
     // update user profile function
     const handleSubmitForm = async (e) => {
         e.preventDefault();
-        setIsuser_UpdateProfile(null);
+        setIsUpdateSuccess(null);
         setUploadError(null);
         if (Object.keys(formData).length === 0) {
             setUploadError('Nothing changed to update !!!');
+            setTimeout(() => {
+                setUploadError(null);
+            }, 5000);
             return;
         }
-        if (imgUploadProgress < 100) {
+        if (imgUploadProgress && imgUploadProgress < 100) {
             setUploadError('Please wait for image to upload !!!');
+            setTimeout(() => {
+                setUploadError(null);
+            }, 5000);
             return;
         }
         try {
             const res = await axios.put(`/api/user/update/${currentUser._id}`, formData);
             if (res?.status === 200) {
                 const updatedUser = res.data;
-                setIsuser_UpdateProfile('Update user successfully');
+                setIsUpdateSuccess('Update user successfully');
+                setTimeout(() => {
+                    setIsUpdateSuccess(null);
+                }, 5000);
                 dispatch(user_UpdateProfile(updatedUser));
             }
         } catch (error) {
             const errorMessages = error.response?.data?.message;
             if (errorMessages) {
                 setUploadError(errorMessages || 'An unexpected error occurred');
+                setTimeout(() => {
+                    setUploadError(null);
+                }, 5000);
             }
             console.log(error);
         }
@@ -115,6 +129,9 @@ export default function Profile_Component() {
             const errorMessages = error.response?.data?.message;
             if (errorMessages) {
                 setUploadError(errorMessages || 'An unexpected error occurred');
+                setTimeout(() => {
+                    setUploadError(null);
+                }, 5000);
             }
             console.log(error);
         }
@@ -129,6 +146,9 @@ export default function Profile_Component() {
             }
         } catch (error) {
             setUploadError('An unexpected error occurred');
+            setTimeout(() => {
+                setUploadError(null);
+            }, 5000);
             console.log(error);
         }
     };
@@ -190,12 +210,12 @@ export default function Profile_Component() {
                 )}
 
                 {/* show message when update successfully */}
-                {isuser_UpdateProfile && (
+                {isUpdateSuccess && (
                     <Alert
                         color='success'
                         className='w-full font-semibold flex justify-center items-center'
                     >
-                        {isuser_UpdateProfile}
+                        {isUpdateSuccess}
                     </Alert>
                 )}
 
@@ -220,9 +240,27 @@ export default function Profile_Component() {
                     placeholder='Password'
                     onChange={handleChange}
                 />
-                <Button type='submit' gradientDuoTone='purpleToBlue' outline>
-                    Update
+
+                {/* button update profile */}
+                <Button
+                    type='submit'
+                    gradientDuoTone='purpleToBlue'
+                    outline
+                    disabled={imgUploadProgress && imgUploadProgress < 100}
+                >
+                    {imgUploadProgress && imgUploadProgress < 100
+                        ? 'Please wait for image to upload'
+                        : 'Update Profile'}
                 </Button>
+
+                {/* button create a post: only for admin */}
+                {currentUser.isAdmin && (
+                    <Link to={'/create-post'}>
+                        <Button type='button' className='w-full' gradientDuoTone='purpleToPink'>
+                            Create a Post
+                        </Button>
+                    </Link>
+                )}
             </form>
 
             {/* buttons: delete account & sign out */}
