@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
+import postRoutes from './routes/post.route.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -28,6 +29,7 @@ app.listen(3000, () => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/post', postRoutes);
 
 // Middleware for handling errors
 app.use((err, req, res, next) => {
