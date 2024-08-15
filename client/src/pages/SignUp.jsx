@@ -25,11 +25,7 @@ export default function SignUp() {
         try {
             setErrorMessage(null);
             setLoadingState(true);
-            const res = await axios.post('/api/auth/sign-up', formData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const res = await axios.post('/api/auth/sign-up', formData);
             const data = res.data;
             // navigate to Sign In page if user created account successfully
             if (res.status === 201) {

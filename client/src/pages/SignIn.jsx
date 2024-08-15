@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { signInSuccess } from '../redux/slices/userSlice';
+import { user_SignIn } from '../redux/slices/userSlice';
 import OAuth_Component from '../components/OAuth_Component';
 
 export default function SignIn() {
@@ -32,7 +32,7 @@ export default function SignIn() {
             const data = res.data;
             // dispatch info user & navigate to home page if user signed in successfully
             if (res.status === 200) {
-                dispatch(signInSuccess(data));
+                dispatch(user_SignIn(data));
                 navigate('/');
             }
         } catch (error) {

@@ -3,7 +3,7 @@ import { AiFillGoogleCircle } from 'react-icons/ai';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { app } from '../firebase';
 import axios from 'axios';
-import { signInSuccess } from '../redux/slices/userSlice';
+import { user_SignIn } from '../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -32,7 +32,7 @@ export default function OAuth_Component() {
             );
             const data = res.data;
             if (res.status === 200) {
-                dispatch(signInSuccess(data));
+                dispatch(user_SignIn(data));
                 navigate('/');
             }
         } catch (error) {

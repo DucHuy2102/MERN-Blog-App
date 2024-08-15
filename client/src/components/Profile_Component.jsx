@@ -6,22 +6,25 @@ import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import axios from 'axios';
-import { deleteSuccess, updateSuccess } from '../redux/slices/userSlice';
+import { user_DeleteAccount, user_SignOut, user_UpdateProfile } from '../redux/slices/userSlice';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 export default function Profile_Component() {
+    // get current user from redux store
     const currentUser = useSelector((state) => state.user.currentUser);
 
+    // states
     const dispatch = useDispatch();
     const [imgFile, setImgFile] = useState(null);
     const [imgURL, setImgURL] = useState(null);
     const [imgUploadProgress, setImgUploadProgress] = useState(null);
     const [formData, setFormData] = useState({});
     const fileRef = useRef();
-    const [isUpdateSuccess, setIsUpdateSuccess] = useState(null);
+    const [isuser_UpdateProfile, setIsuser_UpdateProfile] = useState(null);
     const [uploadFailed, setUploadError] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
+    // handle change avatar function
     const handleChangeAvatar = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -30,6 +33,7 @@ export default function Profile_Component() {
         }
     };
 
+    // upload image to firebase storage
     useEffect(() => {
         if (imgFile) {
             const uploadImage = async () => {
@@ -64,13 +68,15 @@ export default function Profile_Component() {
         }
     }, [imgFile]);
 
+    // handle change input function
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
     };
 
+    // update user profile function
     const handleSubmitForm = async (e) => {
         e.preventDefault();
-        setIsUpdateSuccess(null);
+        setIsuser_UpdateProfile(null);
         setUploadError(null);
         if (Object.keys(formData).length === 0) {
             setUploadError('Nothing changed to update !!!');
@@ -84,8 +90,8 @@ export default function Profile_Component() {
             const res = await axios.put(`/api/user/update/${currentUser._id}`, formData);
             if (res?.status === 200) {
                 const updatedUser = res.data;
-                setIsUpdateSuccess('Update user successfully');
-                dispatch(updateSuccess(updatedUser));
+                setIsuser_UpdateProfile('Update user successfully');
+                dispatch(user_UpdateProfile(updatedUser));
             }
         } catch (error) {
             const errorMessages = error.response?.data?.message;
@@ -96,12 +102,13 @@ export default function Profile_Component() {
         }
     };
 
+    // delete account function
     const handleDeleteAccount = async () => {
         setShowModal(false);
         try {
             const res = await axios.delete(`/api/user/delete/${currentUser._id}`);
             if (res?.status === 200) {
-                dispatch(deleteSuccess());
+                dispatch(user_DeleteAccount());
                 localStorage.removeItem('user');
             }
         } catch (error) {
@@ -113,9 +120,24 @@ export default function Profile_Component() {
         }
     };
 
+    // sign out function
+    const handleSignOutAccount = async () => {
+        try {
+            const res = await axios.post('/api/auth/sign-out');
+            if (res?.status === 200) {
+                dispatch(user_SignOut());
+            }
+        } catch (error) {
+            setUploadError('An unexpected error occurred');
+            console.log(error);
+        }
+    };
+
     return (
         <div className='max-w-lg mx-auto p-3 w-full'>
             <h1 className='text-center font-semibold text-3xl my-7'>Profile</h1>
+
+            {/* form */}
             <form className='flex flex-col gap-4' onSubmit={handleSubmitForm}>
                 {/* avatar */}
                 <input
@@ -168,12 +190,12 @@ export default function Profile_Component() {
                 )}
 
                 {/* show message when update successfully */}
-                {isUpdateSuccess && (
+                {isuser_UpdateProfile && (
                     <Alert
                         color='success'
                         className='w-full font-semibold flex justify-center items-center'
                     >
-                        {isUpdateSuccess}
+                        {isuser_UpdateProfile}
                     </Alert>
                 )}
 
@@ -203,6 +225,7 @@ export default function Profile_Component() {
                 </Button>
             </form>
 
+            {/* buttons: delete account & sign out */}
             <div className='text-red-500 flex justify-between mt-4'>
                 <span
                     onClick={() => setShowModal(true)}
@@ -210,7 +233,10 @@ export default function Profile_Component() {
                 >
                     Delete Account
                 </span>
-                <span className='border px-5 py-2 rounded-xl hover:bg-red-500 hover:text-white hover:border-none transition duration-200 cursor-pointer'>
+                <span
+                    onClick={handleSignOutAccount}
+                    className='border px-5 py-2 rounded-xl hover:bg-red-500 hover:text-white hover:border-none transition duration-200 cursor-pointer'
+                >
                     Sign Out
                 </span>
             </div>

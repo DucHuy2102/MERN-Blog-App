@@ -1,15 +1,32 @@
-import { Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
+import { Alert, Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../redux/slices/themeSlice';
+import axios from 'axios';
+import { user_SignOut } from '../redux/slices/userSlice';
+import { useState } from 'react';
 
 export default function Header() {
     const dispatch = useDispatch();
     const pathURL = useLocation().pathname;
     const currentUser = useSelector((state) => state.user.currentUser);
     const theme = useSelector((state) => state.theme.theme);
+    const [uploadFailed, setUploadError] = useState(null);
+
+    // sign out function
+    const handleSignOutAccount = async () => {
+        try {
+            const res = await axios.post('/api/auth/sign-out');
+            if (res?.status === 200) {
+                dispatch(user_SignOut());
+            }
+        } catch (error) {
+            setUploadError('An unexpected error occurred');
+            console.log(error);
+        }
+    };
 
     return (
         <Navbar className='border-b-2'>
@@ -24,7 +41,7 @@ export default function Header() {
                 Blog
             </Link>
 
-            {/* search */}
+            {/* search form */}
             <form>
                 <TextInput
                     type='text'
@@ -33,6 +50,8 @@ export default function Header() {
                     className='hidden lg:inline'
                 />
             </form>
+
+            {/* button search for mobile */}
             <Button
                 className='w-12 h-10 lg:hidden flex items-center justify-center'
                 color='gray'
@@ -66,9 +85,7 @@ export default function Header() {
                             <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Dropdown.Divider />
-                        <Link to={'/'}>
-                            <Dropdown.Item>Sign out</Dropdown.Item>
-                        </Link>
+                        <Dropdown.Item onClick={handleSignOutAccount}>Sign out</Dropdown.Item>
                     </Dropdown>
                 ) : (
                     <Link to='/sign-in' className='ml-2'>
@@ -92,6 +109,16 @@ export default function Header() {
                     <Link to='/projects'>Project</Link>
                 </Navbar.Link>
             </Navbar.Collapse>
+
+            {/* show error when sign out failed */}
+            {uploadFailed && (
+                <Alert
+                    color='failure'
+                    className='w-full font-semibold flex justify-center items-center'
+                >
+                    {uploadFailed}
+                </Alert>
+            )}
         </Navbar>
     );
 }
