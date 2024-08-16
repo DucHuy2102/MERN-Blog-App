@@ -1,14 +1,15 @@
 import { Sidebar } from 'flowbite-react';
-import { HiArrowSmDown, HiUser } from 'react-icons/hi';
+import { HiArrowSmDown, HiDocumentText, HiUser } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { user_SignOut } from '../redux/slices/userSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Sidebar_Component() {
     const dispatch = useDispatch();
     const [uploadFailed, setUploadError] = useState(null);
+    const isAdmin = useSelector((state) => state.user.currentUser.isAdmin);
 
     // get tab from url
     const location = useLocation();
@@ -35,17 +36,32 @@ export default function Sidebar_Component() {
     return (
         <Sidebar className='w-full md:w-56'>
             <Sidebar.Items>
-                <Sidebar.ItemGroup>
+                <Sidebar.ItemGroup className='flex flex-col gap-1 justify-center'>
                     <Sidebar.Item
                         as={Link}
                         to='/dashboard?tab=profile'
                         active={tab === 'profile'}
                         icon={HiUser}
-                        label={'User'}
+                        label={isAdmin ? 'Admin' : 'User'}
                         labelColor='dark'
                     >
                         Profile
                     </Sidebar.Item>
+
+                    {/* items for admin */}
+                    {isAdmin && (
+                        <>
+                            <Sidebar.Item
+                                as={Link}
+                                to='/dashboard?tab=posts'
+                                active={tab === 'posts'}
+                                icon={HiDocumentText}
+                            >
+                                Posts
+                            </Sidebar.Item>
+                        </>
+                    )}
+
                     <Sidebar.Item
                         icon={HiArrowSmDown}
                         className='cursor-pointer'
