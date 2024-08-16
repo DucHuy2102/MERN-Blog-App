@@ -1,4 +1,4 @@
-import Post from '../models/post.modal.js';
+import Post from '../models/post.model.js';
 import { handleError } from '../utils/handleError.js';
 
 // create a new post
@@ -31,16 +31,15 @@ export const createPost = async (req, res, next) => {
 
 // get all posts
 export const getPosts = async (req, res, next) => {
-    console.log(req.query);
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.perPage) || 9;
         const sort = req.query.order === 'asc' ? 1 : -1;
         const posts = await Post.find({
-            ...(req.query.userID && [{ userID: req.query.userID }]),
-            ...(req.query.category && [{ category: req.query.category }]),
-            ...(req.query.slug && [{ slug: req.query.slug }]),
-            ...(req.query.postID && [{ _id: req.query.postID }]),
+            ...(req.query.userID && { userID: req.query.userID }),
+            ...(req.query.category && { category: req.query.category }),
+            ...(req.query.slug && { slug: req.query.slug }),
+            ...(req.query.postID && { _id: req.query.postID }),
             ...(req.query.searchTerm && {
                 $or: [
                     { title: { $regex: req.query.searchTerm, $options: 'i' } },
