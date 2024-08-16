@@ -7,8 +7,9 @@ import { Link } from 'react-router-dom';
 export default function DashPosts() {
     const currentUser = useSelector((state) => state.user.currentUser);
     const [posts, setPosts] = useState([]);
-    console.log(posts);
+    const [showMore, setShowMore] = useState(true);
 
+    // get all posts
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -16,6 +17,9 @@ export default function DashPosts() {
                 if (res.status === 200) {
                     const postsData = res.data.posts;
                     setPosts(postsData);
+                    if (postsData.length < 9) {
+                        setShowMore(false);
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -26,6 +30,25 @@ export default function DashPosts() {
             fetchPosts();
         }
     }, [currentUser._id, currentUser.isAdmin]);
+
+    // Show more posts function
+    const handleShowMorePost = async () => {
+        const startIndex = posts.length;
+        try {
+            const res = await axios.get(
+                `/api/post/get-posts?userID=${currentUser._id}&startIndex=${startIndex}`
+            );
+            if (res.status === 200) {
+                const postsData = res.data.posts;
+                setPosts([...posts, ...postsData]);
+                if (postsData.length < 9) {
+                    setShowMore(false);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <div
@@ -86,6 +109,16 @@ export default function DashPosts() {
                             </Table.Body>
                         ))}
                     </Table>
+                    {showMore && (
+                        <div className='mt-5 mb-3 w-full flex justify-center items-center'>
+                            <button
+                                onClick={handleShowMorePost}
+                                className='w-40 text-teal-500 hover:bg-teal-500 hover:text-white dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-black transition duration-200 text-md py-2 rounded-lg border border-teal-500'
+                            >
+                                Show more
+                            </button>
+                        </div>
+                    )}
                 </>
             ) : (
                 <p>You have no posts!</p>
