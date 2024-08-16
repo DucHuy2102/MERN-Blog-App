@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { Table } from 'flowbite-react';
+import { Button, Modal, Table } from 'flowbite-react';
 import { Link } from 'react-router-dom';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 export default function DashPosts() {
     const currentUser = useSelector((state) => state.user.currentUser);
     const [posts, setPosts] = useState([]);
     const [showMore, setShowMore] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [postID, setPostID] = useState('');
 
     // get all posts
     useEffect(() => {
@@ -50,6 +53,20 @@ export default function DashPosts() {
         }
     };
 
+    // delete post function
+    const handleDeleteAccount = async () => {
+        setShowModal(false);
+        try {
+            const res = await axios.delete(`/api/post/delete-post/${postID}/${currentUser._id}`);
+            if (res.status === 204) {
+                const postsData = posts.filter((post) => post._id !== postID);
+                setPosts(postsData);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div
             className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300
@@ -57,6 +74,7 @@ export default function DashPosts() {
         >
             {currentUser.isAdmin && posts.length > 0 ? (
                 <>
+                    {/* table display all post */}
                     <Table hoverable className='shadow-md'>
                         <Table.Head>
                             <Table.HeadCell>Date Updated</Table.HeadCell>
@@ -93,7 +111,12 @@ export default function DashPosts() {
                                     </Table.Cell>
                                     <Table.Cell>{post.category}</Table.Cell>
                                     <Table.Cell>
-                                        <span className='text-red-500 hover:underline cursor-pointer font-medium'>
+                                        <span
+                                            onClick={() => {
+                                                setShowModal(true), setPostID(post._id);
+                                            }}
+                                            className='text-red-500 hover:underline cursor-pointer font-medium'
+                                        >
                                             Delete
                                         </span>
                                     </Table.Cell>
@@ -109,6 +132,8 @@ export default function DashPosts() {
                             </Table.Body>
                         ))}
                     </Table>
+
+                    {/* button show more post */}
                     {showMore && (
                         <div className='mt-5 mb-3 w-full flex justify-center items-center'>
                             <button
@@ -118,6 +143,30 @@ export default function DashPosts() {
                                 Show more
                             </button>
                         </div>
+                    )}
+
+                    {/* show modal to confirm delete post */}
+                    {showModal && (
+                        <Modal show={showModal} onClose={() => setShowModal(false)} size='md' popup>
+                            <Modal.Header />
+                            <Modal.Body>
+                                <div className='text-center'>
+                                    <HiOutlineExclamationCircle className='text-red-500 text-5xl mx-auto' />
+                                    <span className='text-lg font-medium text-black'>
+                                        This action cannot be undone. Do you want to proceed with
+                                        deleting?
+                                    </span>
+                                    <div className='flex justify-between items-center mt-5'>
+                                        <Button color='gray' onClick={() => setShowModal(false)}>
+                                            Cancel
+                                        </Button>
+                                        <Button color='failure' onClick={handleDeleteAccount}>
+                                            Delete
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Modal.Body>
+                        </Modal>
                     )}
                 </>
             ) : (
