@@ -63,3 +63,30 @@ export const deleteUser = async (req, res, next) => {
         next(handleError(500, 'Internal server error'));
     }
 };
+
+// Get all users
+export const getAllUsers = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        return next(handleError(403, 'You are not authorized to perform this action'));
+    }
+
+    try {
+        const startIndex = parseInt(req.query.startIndex) || 0;
+        const limit = parseInt(req.query.limit) || 10;
+        const sort = req.query.sort === 'asc' ? 1 : -1;
+        const users = await User.find().sort({ createdAt: sort }).skip(startIndex).limit(limit);
+        const usersWithoutPassword = users.map((user) => {
+            const { password, ...rest } = user._doc;
+            return rest;
+        });
+        const totalUsers = await User.countDocuments();
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        const userLastMonth = await User.countDocuments({
+            createdAt: { $gte: lastMonth },
+        });
+        res.status(200).json({ usersWithoutPassword, totalUsers, userLastMonth });
+    } catch (error) {
+        next(handleError(500, 'Internal server error'));
+    }
+};
