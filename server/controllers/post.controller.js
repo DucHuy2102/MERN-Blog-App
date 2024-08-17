@@ -76,3 +76,28 @@ export const deletePost = async (req, res, next) => {
         next(handleError(500, error.message));
     }
 };
+
+// update a post by id and userID
+export const updatePost = async (req, res, next) => {
+    if (!req.user.isAdmin && req.user.id !== req.body.userID) {
+        return next(handleError(403, 'You are not authorized to update this post'));
+    }
+
+    try {
+        const updatedPost = await Post.findByIdAndUpdate(
+            req.params.postID,
+            {
+                $set: {
+                    title: req.body.title,
+                    content: req.body.content,
+                    category: req.body.category,
+                    image: req.body.image,
+                },
+            },
+            { new: true }
+        );
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        next(handleError(500, error.message));
+    }
+};

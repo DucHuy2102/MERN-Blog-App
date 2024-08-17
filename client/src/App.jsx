@@ -7,6 +7,7 @@ import {
     Dashboard_Page,
     Projects_Page,
     CreatePost_Page,
+    UpdatePost_Page,
 } from './pages/exportPage';
 import {
     AdminRoute,
@@ -33,6 +34,7 @@ export default function App() {
                 {/* route for admin */}
                 <Route element={<AdminRoute />}>
                     <Route path='/create-post' element={<CreatePost_Page />} />
+                    <Route path='/update-post/:postID' element={<UpdatePost_Page />} />
                 </Route>
             </Routes>
             <Footer_Component />
