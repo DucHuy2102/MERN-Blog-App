@@ -4,23 +4,24 @@ import axios from 'axios';
 import { Button, Modal, Table } from 'flowbite-react';
 import { Link } from 'react-router-dom';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
-export default function DashPosts() {
+export default function DashUsers() {
     const currentUser = useSelector((state) => state.user.currentUser);
-    const [posts, setPosts] = useState([]);
+    const [users, setUsers] = useState([]);
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [postID, setPostID] = useState('');
 
-    // get all posts
+    // get all users
     useEffect(() => {
-        const fetchPosts = async () => {
+        const fetchUsers = async () => {
             try {
-                const res = await axios.get(`/api/post/get-posts?userID=${currentUser._id}`);
+                const res = await axios.get('/api/user/get-all-users');
                 if (res.status === 200) {
-                    const postsData = res.data.posts;
-                    setPosts(postsData);
-                    if (postsData.length < 9) {
+                    const usersData = res.data.usersWithoutPassword;
+                    setUsers(usersData);
+                    if (usersData.length < 9) {
                         setShowMore(false);
                     }
                 }
@@ -30,22 +31,20 @@ export default function DashPosts() {
         };
 
         if (currentUser.isAdmin) {
-            fetchPosts();
+            fetchUsers();
         }
     }, [currentUser._id, currentUser.isAdmin]);
 
     // Show more posts function
     const handleShowMorePost = async () => {
-        const startIndex = posts.length;
+        const startIndex = users.length;
         try {
-            const res = await axios.get(
-                `/api/post/get-posts?userID=${currentUser._id}&startIndex=${startIndex}`
-            );
+            const res = await axios.get(`/api/user/get-all-users?startIndex=${startIndex}`);
             if (res.status === 200) {
-                const postsData = res.data.posts;
-                setPosts([...posts, ...postsData]);
-                if (postsData.length < 9) {
-                    setShowMore(false);
+                const usersData = res.data.usersWithoutPassword;
+                setUsers([...users, ...usersData]);
+                if (usersData.length < 9) {
+                    setShowMore(true);
                 }
             }
         } catch (error) {
@@ -54,17 +53,17 @@ export default function DashPosts() {
     };
 
     // delete post function
-    const handleDeleteAccount = async () => {
+    const handleDeleteUser = async () => {
         setShowModal(false);
-        try {
-            const res = await axios.delete(`/api/post/delete-post/${postID}/${currentUser._id}`);
-            if (res.status === 204) {
-                const postsData = posts.filter((post) => post._id !== postID);
-                setPosts(postsData);
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        // try {
+        //     const res = await axios.delete(`/api/post/delete-post/${postID}/${currentUser._id}`);
+        //     if (res.status === 204) {
+        //         const postsData = users.filter((post) => post._id !== postID);
+        //         setUsers(postsData);
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+        // }
     };
 
     return (
@@ -72,61 +71,54 @@ export default function DashPosts() {
             className='table-auto w-full overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300
         dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'
         >
-            {currentUser.isAdmin && posts.length > 0 ? (
+            {currentUser.isAdmin && users.length > 0 ? (
                 <>
                     {/* table display all post */}
                     <Table hoverable className='shadow-md'>
                         <Table.Head>
-                            <Table.HeadCell>Date Updated</Table.HeadCell>
-                            <Table.HeadCell>Post Image</Table.HeadCell>
-                            <Table.HeadCell>Post Title</Table.HeadCell>
-                            <Table.HeadCell>Category</Table.HeadCell>
-                            <Table.HeadCell>Delete</Table.HeadCell>
+                            <Table.HeadCell>Date Created</Table.HeadCell>
+                            <Table.HeadCell>User Image</Table.HeadCell>
+                            <Table.HeadCell>Username</Table.HeadCell>
+                            <Table.HeadCell>Email</Table.HeadCell>
+                            <Table.HeadCell>Admin</Table.HeadCell>
                             <Table.HeadCell>
-                                <span>Edit</span>
+                                <span>Delete</span>
                             </Table.HeadCell>
                         </Table.Head>
-                        {posts.map((post) => (
-                            <Table.Body key={post._id} className='divide-y'>
+                        {users.map((user) => (
+                            <Table.Body key={user._id} className='divide-y'>
                                 <Table.Row className='bg-white dark:bg-gray-900 dark:border-gray-800'>
                                     <Table.Cell>
-                                        {new Date(post.updatedAt).toLocaleDateString()}
+                                        {new Date(user.updatedAt).toLocaleDateString()}
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Link to={`/posts/${post.slug}`}>
+                                        <Link to={`/posts/${user.slug}`}>
                                             <img
-                                                src={post.image}
+                                                src={user.avatar}
                                                 alt='post'
-                                                className='w-20 h-20 object-cover bg-gray-500'
+                                                className='w-20 h-20 object-cover bg-gray-500 rounded-full'
                                             />
                                         </Link>
                                     </Table.Cell>
+                                    <Table.Cell>{user.username}</Table.Cell>
+                                    <Table.Cell>{user.email}</Table.Cell>
                                     <Table.Cell>
-                                        <Link
-                                            className='font-medium text-gray-900 dark:text-white'
-                                            to={`/posts/${post.slug}`}
-                                        >
-                                            {post.title}
-                                        </Link>
+                                        {user.isAdmin ? (
+                                            <FaCheck className='text-green-500' />
+                                        ) : (
+                                            <FaTimes className='text-red-500' />
+                                        )}
                                     </Table.Cell>
-                                    <Table.Cell>{post.category}</Table.Cell>
                                     <Table.Cell>
                                         <span
                                             onClick={() => {
-                                                setShowModal(true), setPostID(post._id);
+                                                setPostID(user._id);
+                                                setShowModal(true);
                                             }}
                                             className='text-red-500 hover:underline cursor-pointer font-medium'
                                         >
                                             Delete
                                         </span>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Link
-                                            className='text-teal-500 hover:underline cursor-pointer font-medium'
-                                            to={`/update-post/${post._id}`}
-                                        >
-                                            <span>Edit</span>
-                                        </Link>
                                     </Table.Cell>
                                 </Table.Row>
                             </Table.Body>
@@ -153,14 +145,14 @@ export default function DashPosts() {
                                 <div className='text-center'>
                                     <HiOutlineExclamationCircle className='text-red-500 text-5xl mx-auto' />
                                     <span className='text-lg font-medium text-black'>
-                                        This action cannot be undone. Do you want to proceed with
-                                        deleting?
+                                        This action cannot be undone. Do you want to delete this
+                                        user?
                                     </span>
                                     <div className='flex justify-between items-center mt-5'>
                                         <Button color='gray' onClick={() => setShowModal(false)}>
                                             Cancel
                                         </Button>
-                                        <Button color='failure' onClick={handleDeleteAccount}>
+                                        <Button color='failure' onClick={handleDeleteUser}>
                                             Delete
                                         </Button>
                                     </div>
@@ -170,7 +162,7 @@ export default function DashPosts() {
                     )}
                 </>
             ) : (
-                <p>You have no posts!</p>
+                <p>You have no users!</p>
             )}
         </div>
     );

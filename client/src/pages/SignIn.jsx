@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { user_SignIn } from '../redux/slices/userSlice';
-import OAuth_Component from '../components/OAuth_Component';
+import { OAuth_Component } from '../components/exportComponent';
 
 export default function SignIn() {
     // state for error message and loading

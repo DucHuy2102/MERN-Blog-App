@@ -2,7 +2,7 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import OAuth_Component from '../components/OAuth_Component';
+import { OAuth_Component } from '../components/exportComponent';
 
 export default function SignUp() {
     // state for error message and loading

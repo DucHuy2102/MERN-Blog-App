@@ -7,7 +7,7 @@ import { user_SignIn } from '../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-export default function OAuth_Component() {
+export default function OAuth() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
