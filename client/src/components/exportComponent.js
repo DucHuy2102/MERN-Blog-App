@@ -8,3 +8,4 @@ export { default as Profile_Component } from './Profile';
 export { default as AdminRoute } from './AdminRoute';
 export { default as DashPosts_Component } from './DashPosts';
 export { default as DashUsers_Component } from './DashUsers';
+export { default as CallToAction_Component } from './CallToAction';

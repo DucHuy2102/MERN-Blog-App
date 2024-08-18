@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Spinner } from 'flowbite-react';
+import { CallToAction_Component } from '../components/exportComponent';
 
 export default function PostDetail() {
     const { postSlug } = useParams();
@@ -74,7 +75,11 @@ export default function PostDetail() {
             <div
                 className='w-full p-3 mx-auto post-content'
                 dangerouslySetInnerHTML={{ __html: postDetail?.content }}
-            ></div>
+            />
+
+            <div className='w-full mx-auto'>
+                <CallToAction_Component />
+            </div>
         </main>
     );
 }
