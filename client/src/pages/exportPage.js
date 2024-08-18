@@ -6,3 +6,4 @@ export { default as Home_Page } from './Home';
 export { default as Projects_Page } from './Projects';
 export { default as CreatePost_Page } from './CreatePost';
 export { default as UpdatePost_Page } from './UpdatePost';
+export { default as PostDetail_Page } from './PostDetail';

@@ -101,3 +101,4 @@ export const updatePost = async (req, res, next) => {
         next(handleError(500, error.message));
     }
 };
+

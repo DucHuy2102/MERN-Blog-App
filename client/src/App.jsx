@@ -8,6 +8,7 @@ import {
     Projects_Page,
     CreatePost_Page,
     UpdatePost_Page,
+    PostDetail_Page,
 } from './pages/exportPage';
 import {
     AdminRoute,
@@ -21,12 +22,15 @@ export default function App() {
         <Router>
             <Header_Component />
             <Routes>
-                {/* route for user */}
+                {/* route not auth */}
                 <Route path='/' element={<Home_Page />} />
                 <Route path='/sign-in' element={<SignIn_Page />} />
                 <Route path='/sign-up' element={<SignUp_Page />} />
                 <Route path='/about' element={<About_Page />} />
                 <Route path='/projects' element={<Projects_Page />} />
+                <Route path='/post/:postSlug' element={<PostDetail_Page />} />
+
+                {/* route for user */}
                 <Route element={<PrivateRoute />}>
                     <Route path='/dashboard' element={<Dashboard_Page />} />
                 </Route>
