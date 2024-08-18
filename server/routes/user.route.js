@@ -7,7 +7,7 @@ const router = express.Router();
 // Update user
 router.put('/update/:userID', verifyUser, updateUSer);
 
-// Delete user
+// Delete user by ID
 router.delete('/delete/:userID', verifyUser, deleteUser);
 
 // get all users

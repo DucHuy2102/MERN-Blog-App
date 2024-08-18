@@ -11,7 +11,7 @@ export default function DashUsers() {
     const [users, setUsers] = useState([]);
     const [showMore, setShowMore] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [postID, setPostID] = useState('');
+    const [userDelete, setUserDelete] = useState('');
 
     // get all users
     useEffect(() => {
@@ -55,15 +55,15 @@ export default function DashUsers() {
     // delete post function
     const handleDeleteUser = async () => {
         setShowModal(false);
-        // try {
-        //     const res = await axios.delete(`/api/post/delete-post/${postID}/${currentUser._id}`);
-        //     if (res.status === 204) {
-        //         const postsData = users.filter((post) => post._id !== postID);
-        //         setUsers(postsData);
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const res = await axios.delete(`/api/user/delete/${userDelete}`);
+            if (res.status === 200) {
+                const usersData = users.filter((user) => user._id !== userDelete);
+                setUsers(usersData);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -112,7 +112,7 @@ export default function DashUsers() {
                                     <Table.Cell>
                                         <span
                                             onClick={() => {
-                                                setPostID(user._id);
+                                                setUserDelete(user._id);
                                                 setShowModal(true);
                                             }}
                                             className='text-red-500 hover:underline cursor-pointer font-medium'
