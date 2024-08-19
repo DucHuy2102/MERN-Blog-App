@@ -90,3 +90,17 @@ export const getAllUsers = async (req, res, next) => {
         next(handleError(500, 'Internal server error'));
     }
 };
+
+// Get user by ID
+export const getUserByID = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.userID);
+        if (!user) {
+            return next(handleError(404, 'User not found'));
+        }
+        const { password, ...rest } = user._doc;
+        res.status(200).json(rest);
+    } catch (error) {
+        next(handleError(500, 'Internal server error'));
+    }
+};

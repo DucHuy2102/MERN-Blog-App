@@ -15,3 +15,15 @@ export const createComment = async (req, res, next) => {
         next(handleError(500, error.message));
     }
 };
+
+// get all comments for a post by postId
+export const getAllComments = async (req, res, next) => {
+    try {
+        const comments = await Comment.find({
+            postId: req.params.postId,
+        }).sort({ createdAt: -1 });
+        res.status(200).json(comments);
+    } catch (error) {
+        next(handleError(500, error.message));
+    }
+};
