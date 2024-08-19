@@ -9,3 +9,5 @@ export { default as AdminRoute } from './AdminRoute';
 export { default as DashPosts_Component } from './DashPosts';
 export { default as DashUsers_Component } from './DashUsers';
 export { default as CallToAction_Component } from './CallToAction';
+export { default as Comment_Component } from './Comment';
+export { default as ScrollToTop_Component } from './ScrollToTop';

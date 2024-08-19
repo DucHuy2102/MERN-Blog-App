@@ -15,11 +15,13 @@ import {
     Footer_Component,
     Header_Component,
     PrivateRoute,
+    ScrollToTop_Component,
 } from './components/exportComponent';
 
 export default function App() {
     return (
         <Router>
+            <ScrollToTop_Component />
             <Header_Component />
             <Routes>
                 {/* route not auth */}

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Spinner } from 'flowbite-react';
-import { CallToAction_Component } from '../components/exportComponent';
+import { CallToAction_Component, Comment_Component } from '../components/exportComponent';
 
 export default function PostDetail() {
     const { postSlug } = useParams();
@@ -80,6 +80,7 @@ export default function PostDetail() {
             <div className='w-full mx-auto'>
                 <CallToAction_Component />
             </div>
+            <Comment_Component postId={postDetail._id} />
         </main>
     );
 }
