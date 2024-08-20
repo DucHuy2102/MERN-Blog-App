@@ -49,3 +49,26 @@ export const likeComment = async (req, res, next) => {
         next(handleError(500, error.message));
     }
 };
+
+// edit a comment
+export const editComment = async (req, res, next) => {
+    try {
+        const comment = await Comment.findById(req.params.commentId);
+        if (!comment) {
+            return next(handleError(404, 'Comment not found'));
+        }
+        if (comment.userId !== req.user.id && !req.user.isAdmin) {
+            return next(handleError(401, 'You are not allowed to perform this action'));
+        }
+        const editComment = await Comment.findByIdAndUpdate(
+            req.params.commentId,
+            {
+                content: req.body.content,
+            },
+            { new: true }
+        );
+        res.status(200).json(editComment);
+    } catch (error) {
+        next(handleError(500, error.message));
+    }
+};

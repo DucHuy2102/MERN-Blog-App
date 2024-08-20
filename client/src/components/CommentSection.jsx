@@ -87,6 +87,13 @@ export default function CommentSection({ postId }) {
     };
 
     // handle edit comment
+    const handleEditComment = (comment, newContent) => {
+        const updatedComments = allComments.map((c) =>
+            c._id === comment._id ? { ...c, content: newContent } : c
+        );
+        setAllComments(updatedComments);
+        console.log(allComments);
+    };
 
     // handle delete comment
 
@@ -153,6 +160,7 @@ export default function CommentSection({ postId }) {
                                     key={comment._id}
                                     comment={comment}
                                     onLike={handleLikeComment}
+                                    onEdit={handleEditComment}
                                 />
                             ))}
                         </>

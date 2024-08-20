@@ -1,5 +1,10 @@
 import express from 'express';
-import { createComment, getAllComments, likeComment } from '../controllers/comment.controller.js';
+import {
+    createComment,
+    getAllComments,
+    likeComment,
+    editComment,
+} from '../controllers/comment.controller.js';
 import { verifyUser } from '../utils/verifyUser.js';
 
 const router = express.Router();
@@ -14,6 +19,7 @@ router.get('/get-all-comments/:postId', getAllComments);
 router.put('/like-comment/:commentId', verifyUser, likeComment);
 
 // edit a comment
+router.put('/edit-comment/:commentId', verifyUser, editComment);
 
 // delete a comment
 
