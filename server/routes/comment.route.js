@@ -4,6 +4,7 @@ import {
     getAllComments,
     likeComment,
     editComment,
+    deleteCommmet,
 } from '../controllers/comment.controller.js';
 import { verifyUser } from '../utils/verifyUser.js';
 
@@ -22,5 +23,6 @@ router.put('/like-comment/:commentId', verifyUser, likeComment);
 router.put('/edit-comment/:commentId', verifyUser, editComment);
 
 // delete a comment
+router.delete('/delete-comment/:commentId', verifyUser, deleteCommmet);
 
 export default router;

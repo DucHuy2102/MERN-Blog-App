@@ -1,15 +1,18 @@
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { Alert, Button, Textarea } from 'flowbite-react';
+import { Alert, Button, Modal, Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Comment_Component } from './exportComponent';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 export default function CommentSection({ postId }) {
     const currentUser = useSelector((state) => state.user.currentUser);
     const [comment, setComment] = useState('');
     const [allComments, setAllComments] = useState([]);
     const [commentError, setCommentError] = useState(null);
+    const [showModalDelelte, setShowModalDelete] = useState(false);
+    const [commentDelete, setCommentDelete] = useState(null);
     const navigate = useNavigate();
 
     // handle create comment
@@ -92,10 +95,26 @@ export default function CommentSection({ postId }) {
             c._id === comment._id ? { ...c, content: newContent } : c
         );
         setAllComments(updatedComments);
-        console.log(allComments);
     };
 
     // handle delete comment
+    const handleDeleteComment = async (commentId) => {
+        setShowModalDelete(false);
+        try {
+            if (!currentUser) {
+                navigate('/sign-in');
+                return;
+            }
+            const res = await axios.delete(`/api/comment/delete-comment/${commentId}`);
+            if (res?.status === 200) {
+                const updatedComments = allComments.filter((comment) => comment._id !== commentId);
+                setAllComments(updatedComments);
+                setShowModalDelete(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <div className='w-full p-3 mx-auto'>
@@ -161,6 +180,10 @@ export default function CommentSection({ postId }) {
                                     comment={comment}
                                     onLike={handleLikeComment}
                                     onEdit={handleEditComment}
+                                    onDelete={(commentId) => {
+                                        setShowModalDelete(true);
+                                        setCommentDelete(commentId);
+                                    }}
                                 />
                             ))}
                         </>
@@ -179,6 +202,35 @@ export default function CommentSection({ postId }) {
                     </Link>
                 </div>
             )}
+
+            {/* modal delete comment */}
+            <Modal
+                show={showModalDelelte}
+                onClose={() => setShowModalDelete(false)}
+                size='md'
+                popup
+            >
+                <Modal.Header />
+                <Modal.Body>
+                    <div className='text-center'>
+                        <HiOutlineExclamationCircle className='text-red-500 text-5xl mx-auto' />
+                        <span className='text-lg font-medium text-black'>
+                            This action cannot be undone. Do you want to proceed with deleting?
+                        </span>
+                        <div className='flex justify-between items-center mt-5'>
+                            <Button color='gray' onClick={() => setShowModalDelete(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                color='failure'
+                                onClick={() => handleDeleteComment(commentDelete)}
+                            >
+                                Delete
+                            </Button>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

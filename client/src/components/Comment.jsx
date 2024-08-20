@@ -5,7 +5,7 @@ import { FaThumbsUp } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { Button, Textarea } from 'flowbite-react';
 
-export default function Comment({ comment, onLike, onEdit }) {
+export default function Comment({ comment, onLike, onEdit, onDelete }) {
     const currentUser = useSelector((state) => state.user.currentUser);
     const [user, setUser] = useState({});
     const [isEditing, setIsEditing] = useState(false);
@@ -68,6 +68,8 @@ export default function Comment({ comment, onLike, onEdit }) {
                         {moment(comment.createdAt).fromNow()}
                     </span>
                 </div>
+
+                {/* edit comment */}
                 {!isEditing ? (
                     <>
                         <p className='dark:text-gray-200 pb-2'>{comment.content}</p>
@@ -90,13 +92,22 @@ export default function Comment({ comment, onLike, onEdit }) {
                                     }`}
                             </p>
                             {currentUser?._id === comment.userId && (
-                                <button
-                                    type='button'
-                                    onClick={handleClickEdit}
-                                    className='hover:text-blue-500 text-gray-400 font-medium'
-                                >
-                                    Edit
-                                </button>
+                                <>
+                                    <button
+                                        type='button'
+                                        onClick={handleClickEdit}
+                                        className='hover:text-blue-500 text-gray-400 font-medium'
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        type='button'
+                                        onClick={() => onDelete(comment._id)}
+                                        className='hover:text-red-500 text-gray-400 font-medium'
+                                    >
+                                        Delete
+                                    </button>
+                                </>
                             )}
                         </div>
                     </>
