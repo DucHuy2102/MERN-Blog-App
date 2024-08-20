@@ -2,13 +2,19 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Spinner } from 'flowbite-react';
-import { CallToAction_Component, CommentSection_Component } from '../components/exportComponent';
+import {
+    CallToAction_Component,
+    CommentSection_Component,
+    PostCard_Component,
+} from '../components/exportComponent';
 
 export default function PostDetail() {
     const { postSlug } = useParams();
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState(false);
     const [postDetail, setPostDetail] = useState(null);
+    const [recentPosts, setRecentPosts] = useState(null);
+    console.log('recentPosts', recentPosts);
 
     // get post detail by slug
     useEffect(() => {
@@ -31,11 +37,37 @@ export default function PostDetail() {
         getPostDetail();
     }, [postSlug]);
 
+    // get recent posts
+    useEffect(() => {
+        const getRecentPosts = async () => {
+            try {
+                const res = await axios.get(`/api/post/get-posts?limit=3`);
+                if (res.status === 200) {
+                    setRecentPosts(res.data.posts);
+                }
+            } catch (error) {
+                setErr(true);
+                console.log(error);
+            }
+        };
+
+        getRecentPosts();
+    }, []);
+
     // if loading is true, display a spinner
     if (loading) {
         return (
             <div className='min-h-screen flex justify-center items-center'>
                 <Spinner size='xl' />
+            </div>
+        );
+    }
+
+    // if error, display an error message
+    if (err) {
+        return (
+            <div className='min-h-screen flex justify-center items-center'>
+                <h1 className='text-xl text-red-500'>Something went wrong!</h1>
             </div>
         );
     }
@@ -77,10 +109,24 @@ export default function PostDetail() {
                 dangerouslySetInnerHTML={{ __html: postDetail?.content }}
             />
 
+            {/* call to action component */}
             <div className='w-full p-3 mx-auto'>
                 <CallToAction_Component />
             </div>
+
+            {/* comment section */}
             <CommentSection_Component postId={postDetail._id} />
+
+            {/* recent post */}
+            <div className='flex flex-col justify-center items-center mb-5'>
+                <h1 className='text-xl mt-5 font-serif'>Recent Articles</h1>
+                <div className='flex flex-wrap gap-5 mt-5 justify-center'>
+                    {recentPosts &&
+                        recentPosts.map((post) => (
+                            <PostCard_Component key={post._id} post={post} />
+                        ))}
+                </div>
+            </div>
         </main>
     );
 }
