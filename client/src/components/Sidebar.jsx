@@ -1,5 +1,11 @@
 import { Sidebar } from 'flowbite-react';
-import { HiArrowSmDown, HiDocumentText, HiOutlineUserGroup, HiUser } from 'react-icons/hi';
+import {
+    HiAnnotation,
+    HiArrowSmDown,
+    HiDocumentText,
+    HiOutlineUserGroup,
+    HiUser,
+} from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -69,6 +75,15 @@ export default function Sidebar_Component() {
                                 className={`${tab === 'users' ? 'bg-gray-400 text-black' : ''}`}
                             >
                                 Users
+                            </Sidebar.Item>
+                            <Sidebar.Item
+                                as={Link}
+                                to='/dashboard?tab=comments'
+                                active={tab === 'comments'}
+                                icon={HiAnnotation}
+                                className={`${tab === 'comments' ? 'bg-gray-400 text-black' : ''}`}
+                            >
+                                Comments
                             </Sidebar.Item>
                         </>
                     )}

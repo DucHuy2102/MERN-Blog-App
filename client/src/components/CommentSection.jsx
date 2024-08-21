@@ -10,6 +10,7 @@ export default function CommentSection({ postId }) {
     const currentUser = useSelector((state) => state.user.currentUser);
     const [comment, setComment] = useState('');
     const [allComments, setAllComments] = useState([]);
+    console.log(allComments);
     const [commentError, setCommentError] = useState(null);
     const [showModalDelelte, setShowModalDelete] = useState(false);
     const [commentDelete, setCommentDelete] = useState(null);

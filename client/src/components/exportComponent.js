@@ -13,3 +13,4 @@ export { default as CommentSection_Component } from './CommentSection';
 export { default as Comment_Component } from './Comment';
 export { default as ScrollToTop_Component } from './ScrollToTop';
 export { default as PostCard_Component } from './PostCard';
+export { default as DashComment_Component } from './DashComment';

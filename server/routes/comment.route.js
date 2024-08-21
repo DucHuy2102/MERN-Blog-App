@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     createComment,
+    getAllComments_ByPostId,
     getAllComments,
     likeComment,
     editComment,
@@ -14,7 +15,10 @@ const router = express.Router();
 router.post('/create-comment', verifyUser, createComment);
 
 // get all comments
-router.get('/get-all-comments/:postId', getAllComments);
+router.get('/getAll-comments', verifyUser, getAllComments);
+
+// get all comments for a post by postId
+router.get('/get-all-comments/:postId', getAllComments_ByPostId);
 
 // like a comment
 router.put('/like-comment/:commentId', verifyUser, likeComment);

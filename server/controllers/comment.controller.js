@@ -1,5 +1,6 @@
 import { handleError } from '../utils/handleError.js';
 import Comment from '../models/comment.model.js';
+import mongoose from 'mongoose';
 
 // create a new comment
 export const createComment = async (req, res, next) => {
@@ -16,11 +17,45 @@ export const createComment = async (req, res, next) => {
     }
 };
 
-// get all comments for a post by postId
+// get all comments
 export const getAllComments = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        next(handleError(401, 'You are not allowed to perform this action'));
+    }
+    try {
+        const startIndex = parseInt(req.query.startIndex) || 0;
+        const limit = parseInt(req.query.limit) || 10;
+        const sort = req.query.order === 'asc' ? 1 : -1;
+        const comments = await Comment.find()
+            .sort({ createdAt: sort })
+            .skip(startIndex)
+            .limit(limit)
+            .populate('userId')
+            .populate('postId');
+
+        const totalComments = await Comment.countDocuments();
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        const commentsLastMonth = await Comment.countDocuments({
+            createdAt: { $gte: lastMonth },
+        });
+        res.status(200).json({ comments, totalComments, commentsLastMonth });
+    } catch (error) {
+        next(handleError(500, error.message));
+    }
+};
+
+// get all comments for a post by postId
+export const getAllComments_ByPostId = async (req, res, next) => {
+    const { postId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+        return next(handleError(400, 'Invalid Post ID'));
+    }
+    const objectId = new mongoose.Types.ObjectId(postId);
+
     try {
         const comments = await Comment.find({
-            postId: req.params.postId,
+            postId: objectId,
         }).sort({ createdAt: -1 });
         res.status(200).json(comments);
     } catch (error) {
