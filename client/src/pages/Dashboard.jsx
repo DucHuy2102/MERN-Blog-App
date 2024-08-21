@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
+    Dashboard_Component,
     DashComment_Component,
     DashPosts_Component,
     DashUsers_Component,
@@ -23,6 +24,9 @@ export default function Dashboard() {
             <div className='md:w-56'>
                 <Sidebar_Component />
             </div>
+
+            {/* dashboard */}
+            {tab === 'dashboard' && <Dashboard_Component />}
 
             {/* profile */}
             {tab === 'profile' && <Profile_Component />}

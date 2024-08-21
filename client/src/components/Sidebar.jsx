@@ -2,6 +2,7 @@ import { Sidebar } from 'flowbite-react';
 import {
     HiAnnotation,
     HiArrowSmDown,
+    HiChartPie,
     HiDocumentText,
     HiOutlineUserGroup,
     HiUser,
@@ -43,6 +44,18 @@ export default function Sidebar_Component() {
         <Sidebar className='w-full md:w-56'>
             <Sidebar.Items>
                 <Sidebar.ItemGroup className='flex flex-col gap-1 justify-center'>
+                    {isAdmin && (
+                        <Sidebar.Item
+                            as={Link}
+                            to='/dashboard?tab=dashboard'
+                            active={tab === 'dashboard'}
+                            icon={HiChartPie}
+                            className={`${tab === 'dashboard' ? 'bg-gray-400 text-black' : ''}`}
+                        >
+                            Dashboard
+                        </Sidebar.Item>
+                    )}
+
                     <Sidebar.Item
                         as={Link}
                         to='/dashboard?tab=profile'
