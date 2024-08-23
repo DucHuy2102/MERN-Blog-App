@@ -108,9 +108,10 @@ export default function CreatePost() {
                     >
                         <option value='uncategorized'>Select Category</option>
                         <option value='javascript'>JavaScript</option>
-                        <option value='python'>Python</option>
                         <option value='react'>React</option>
-                        <option value='vue'>Vue</option>
+                        <option value='java'>Java</option>
+                        <option value='mongodb'>MongoDB</option>
+                        <option value='python'>Python</option>
                     </Select>
                 </div>
 

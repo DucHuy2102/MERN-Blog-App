@@ -25,7 +25,7 @@ export const getAllComments = async (req, res, next) => {
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 10;
-        const sort = req.query.order === 'asc' ? 1 : -1;
+        const sort = req.query.sort === 'asc' ? 1 : -1;
         const comments = await Comment.find()
             .sort({ createdAt: sort })
             .skip(startIndex)

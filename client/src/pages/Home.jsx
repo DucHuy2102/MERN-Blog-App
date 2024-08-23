@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import { CallToAction_Component, PostCard_Component } from '../components/exportComponent';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { toggleTheme } from '../redux/slices/themeSlice';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
 
+    // get all posts
     useEffect(() => {
         const getAllPosts = async () => {
             const res = await axios.get('/api/post/get-posts');
@@ -22,7 +25,7 @@ export default function Home() {
             <div className='flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto '>
                 <h1 className='text-3xl font-bold lg:text-6xl'>
                     Welcome to my{' '}
-                    <span className='text-transparent bg-gradient-to-r from-blue-500 via-yellow-500 to-green-500 bg-clip-text'>
+                    <span className='text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text hover:bg-gradient-to-r hover:from-yellow-400 hover:via-green-500 hover:to-teal-600 hover:bg-clip-text'>
                         Blog
                     </span>
                 </h1>

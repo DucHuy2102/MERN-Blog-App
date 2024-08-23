@@ -1,12 +1,12 @@
 import { Alert, Avatar, Button, Dropdown, Navbar, TextInput } from 'flowbite-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleTheme } from '../redux/slices/themeSlice';
 import axios from 'axios';
 import { user_SignOut } from '../redux/slices/userSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
     const dispatch = useDispatch();
@@ -14,6 +14,9 @@ export default function Header() {
     const currentUser = useSelector((state) => state.user.currentUser);
     const theme = useSelector((state) => state.theme.theme);
     const [uploadFailed, setUploadError] = useState(null);
+    const location = useLocation();
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     // sign out function
     const handleSignOutAccount = async () => {
@@ -26,6 +29,24 @@ export default function Header() {
             setUploadError('An unexpected error occurred');
             console.log(error);
         }
+    };
+
+    // get search term from url params
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const searchURL = urlParams.get('searchTerm');
+        setSearchTerm(searchURL ?? '');
+    }, [location.search]);
+
+    // handle submit search form
+    const handleSubmit = () => {
+        if (searchTerm.trim() === '') {
+            return;
+        }
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set('searchTerm', searchTerm);
+        const newSearchTerm = urlParams.toString();
+        navigate(`/search?${newSearchTerm}`);
     };
 
     return (
@@ -42,23 +63,16 @@ export default function Header() {
             </Link>
 
             {/* search form */}
-            <form>
+            <form onSubmit={handleSubmit}>
                 <TextInput
                     type='text'
                     placeholder='Search...'
                     rightIcon={AiOutlineSearch}
-                    className='hidden lg:inline'
+                    className='w-40 inline-block sm:w-72'
+                    value={searchTerm ?? ''}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </form>
-
-            {/* button search for mobile */}
-            <Button
-                className='w-12 h-10 lg:hidden flex items-center justify-center'
-                color='gray'
-                pill
-            >
-                <AiOutlineSearch size={18} />
-            </Button>
 
             {/* button change theme & sign-in */}
             <div className='flex gap-2 md:order-2'>

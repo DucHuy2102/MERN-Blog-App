@@ -9,6 +9,7 @@ import {
     CreatePost_Page,
     UpdatePost_Page,
     PostDetail_Page,
+    Search_Page,
 } from './pages/exportPage';
 import {
     AdminRoute,
@@ -29,6 +30,7 @@ export default function App() {
                 <Route path='/sign-in' element={<SignIn_Page />} />
                 <Route path='/sign-up' element={<SignUp_Page />} />
                 <Route path='/about' element={<About_Page />} />
+                <Route path='/search' element={<Search_Page />} />
                 <Route path='/projects' element={<Projects_Page />} />
                 <Route path='/post/:postSlug' element={<PostDetail_Page />} />
 
