@@ -95,7 +95,7 @@ export default function UpdatePost() {
             if (res.status === 200) {
                 setError(null);
                 setFormData({});
-                navigate(`/posts/${res.data.slug}`);
+                navigate(`/post/${res.data.slug}`);
             }
         } catch (error) {
             setFormData({});
